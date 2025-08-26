@@ -115,12 +115,8 @@ def main():
         
         n_values = list(range(n_min, n_max + 1, n_step))
         
-        print(f"\nAnalizando {len(n_values)} valores de N desde {n_min} hasta {n_max}...")
-        
-        # Ejecutar simulaciones para múltiples valores de N
+
         results_by_n = run_multiple_n_simulations(n_values, n_simulations)
-        
-        # Calcular constante de difusión
         diffusion_constant, n_values_list, mean_squared_list, coefficients = calculate_diffusion_constant(results_by_n)
         
         # Mostrar resultados
