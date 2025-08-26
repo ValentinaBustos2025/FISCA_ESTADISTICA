@@ -1,5 +1,3 @@
-import numpy as np
-import matplotlib.pyplot as plt
 from logic import run_simulation, run_multiple_n_simulations, calculate_diffusion_constant, plot_histogram, plot_time_series_sample, plot_mean_squared_vs_n
 
 

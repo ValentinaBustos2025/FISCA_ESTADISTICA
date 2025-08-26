@@ -5,11 +5,8 @@ import matplotlib.pyplot as plt
 #PUNTO 7
 
 #Simulación de una marcha aleatoria unidimensional
-def single_random_walk(n_steps: int) -> int:
-    """
-    Simula una marcha aleatoria unidimensional de N pasos.
-    """
-    steps = np.random.choice([-1, 1], size=n_steps)
+def single_random_walk(n_steps: int, a: float = 1.0) -> float:
+    steps = np.random.choice([-a, a], size=n_steps)
     return np.sum(steps)
 
 def multiple_random_walks(n_steps: int, n_simulations: int) -> List[int]:
@@ -138,18 +135,17 @@ def run_multiple_n_simulations(n_values: List[int], n_simulations: int) -> dict[
     
     return results_by_n
 
-def calculate_diffusion_constant(results_by_n: dict[int, dict]) -> float:
+def calculate_diffusion_constant(results_by_n: dict[int, dict], delta_t: float = 1.0):
     """
-    Calcula la constante de difusión a partir de los resultados.
+    Estima D del ajuste lineal de <x^2> vs N usando <x^2> ≈ 2 D N Δt.
     """
-    n_values = list(results_by_n.keys())
-    mean_squared_values = [results_by_n[n]['mean_squared_position'] for n in n_values]
+    n_values = sorted(results_by_n.keys())
+    mean_squared_values = [float(results_by_n[n]['mean_squared_position']) for n in n_values]
+    coeffs = np.polyfit(np.array(n_values, float), np.array(mean_squared_values, float), 1)
+    slope = float(coeffs[0])              # d<x^2>/dN
+    D = slope / (2.0 * delta_t)
+    return D, n_values, mean_squared_values, coeffs
 
-    coefficients = np.polyfit(n_values, mean_squared_values, 1)
-    slope = coefficients[0]
-    diffusion_constant = slope / 2 
-    
-    return diffusion_constant, n_values, mean_squared_values, coefficients
 
 def plot_time_series_sample(results: dict, sample_size: int = 50):
     """

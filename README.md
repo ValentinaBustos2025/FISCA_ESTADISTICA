@@ -1,15 +1,18 @@
 # FISCA_ESTADISTICA
 Tareas de Simulación para Física Estadística
 
-Para hacer que este código funcione simplemente es necesario que corra el módulo de view.py e indicar en la terminal los parámetros requeridos.  
+Para hacer que este código funcione se debe tener instalado numpy y matplotlib de lo contrario usar "pip install numpy matplotlib" . Luego es necesario que corra el módulo de view.py e indicar en la terminal los parámetros requeridos.  
 
 Dentro del módulo view.py. 
 
 La función main simplemente es un menú para ejecutar los puntos 7 y 8 de la tarea. 
 
-Al elegir el "1" en el menú, tendremos el histograma que debería tener como resultado para el punto 7 y un mensaje sobre la comparación con el teorema del límite central. 
+Al elegir el "1" en el menú, tendremos el histograma con una gaussiana teórica que debería tener como resultado para el punto 7 y un mensaje sobre la comparación con el teorema del límite central.  Se reecomienda el uso de N = 1000 y simulaciones = 10000
 
-Al elegir el "2" en el menú, 
+Al elegir el "2" en el menú, tendremos un scaterring con una linealización teórica que debería tener como resultado para el punto 8 y un mensaje sobre el coeficiente de difusión.
+Se recomienda el uso del rango N=100..5000 steps de 100
+
+Supuestos: pasos ±1 (equivale a= 1), tiempo discreto Δt=1; por tanto, teórico  𝐷 =1/2.
 
 Por otro lado, en el modulo logic tendremos muchas funciones. 
 
