@@ -54,6 +54,9 @@ def run_simulation(n_steps: int, n_simulations: int) -> dict:
     hist_values, bin_edges = np.histogram(final_positions, bins='auto', density=True) #Histograma de las posiciones finales
     bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2 #Centros de los bins para graficar
     
+    final_positions = np.array(final_positions, dtype=float)
+    mean_squared_position = np.mean(final_positions**2)
+
     results = {
         'final_positions': final_positions,
         'mean_position': mean_position,
@@ -65,7 +68,8 @@ def run_simulation(n_steps: int, n_simulations: int) -> dict:
         'x_range': x_range,
         'gaussian_theoretical': gaussian_theoretical,
         'n_steps': n_steps,
-        'n_simulations': n_simulations
+        'n_simulations': n_simulations,
+        'mean_squared_position': mean_squared_position
     }
     
     return results
@@ -119,11 +123,10 @@ def plot_histogram(results: dict):
     
     plt.tight_layout()
     plt.show()
-    
 
 #PUNTO 8
 
-def run_multiple_n_simulations(n_values: List[int], n_simulations: int) -> dict[int, dict]:
+def run_multiple_n_simulations(n_values: List[int], n_simulations: int) -> dict[int, dict]: 
     """
     Ejecuta simulaciones para múltiples valores de N.
     """
@@ -135,16 +138,9 @@ def run_multiple_n_simulations(n_values: List[int], n_simulations: int) -> dict[
     
     return results_by_n
 
-
 def calculate_diffusion_constant(results_by_n: dict[int, dict]) -> float:
     """
     Calcula la constante de difusión a partir de los resultados.
-    
-    Args:
-        results_by_n: Diccionario con resultados para diferentes valores de N
-        
-    Returns:
-        Constante de difusión D
     """
     n_values = list(results_by_n.keys())
     mean_squared_values = [results_by_n[n]['mean_squared_position'] for n in n_values]
@@ -154,3 +150,66 @@ def calculate_diffusion_constant(results_by_n: dict[int, dict]) -> float:
     diffusion_constant = slope / 2 
     
     return diffusion_constant, n_values, mean_squared_values, coefficients
+
+def plot_time_series_sample(results: dict, sample_size: int = 50):
+    """
+    Muestra una muestra de las trayectorias temporales.
+    """
+    n_steps = results['n_steps']
+    
+    plt.figure(figsize=(12, 8))
+    
+    for i in range(min(sample_size, 50)):
+        steps = np.random.choice([-1, 1], size=n_steps)
+        trajectory = np.cumsum(steps)
+        
+        plt.plot(range(n_steps), trajectory, alpha=0.3, linewidth=0.5)
+    
+    plt.xlabel('Número de pasos', fontsize=12)
+    plt.ylabel('Posición', fontsize=12)
+    plt.title(f'Muestra de {min(sample_size, 50)} trayectorias de la marcha aleatoria\n'
+              f'(N = {n_steps} pasos)', fontsize=14)
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.show()
+
+def plot_mean_squared_vs_n(results_by_n: dict[int, dict], diffusion_constant: float, coefficients: list):
+    """
+    Grafica ⟨x²⟩ vs N y muestra el ajuste lineal.
+    """
+    n_values = list(results_by_n.keys())
+    mean_squared_values = [results_by_n[n]['mean_squared_position'] for n in n_values]
+    theoretical_values = n_values  # ⟨x²⟩ teórico = N
+    
+    plt.figure(figsize=(12, 8))
+    plt.scatter(n_values, mean_squared_values, color='blue', s=50, alpha=0.7, label='Datos simulados')
+    
+    # Ajuste lineal
+    fit_line = np.poly1d(coefficients)
+    x_fit = np.linspace(min(n_values), max(n_values), 100)
+    y_fit = fit_line(x_fit)
+    plt.plot(x_fit, y_fit, 'r-', linewidth=2, label=f'Ajuste lineal: ⟨x²⟩ = {coefficients[0]:.3f}N + {coefficients[1]:.3f}')
+    
+    # Línea teórica
+    plt.plot(n_values, theoretical_values, 'g--', linewidth=2, label='Teórico: ⟨x²⟩ = N')
+
+    textstr = '\n'.join((
+        f'Pendiente del ajuste: {coefficients[0]:.4f}',
+        f'Constante de difusión D: {diffusion_constant:.4f}',
+        f'Teórico: D = 0.5',
+        f'Desviación: {abs(diffusion_constant - 0.5)/0.5*100:.2f}%',
+        f'Ecuación: ⟨x²⟩ = 2D × N',
+        f'Número de puntos: {len(n_values)}'))    
+    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+    plt.text(0.02, 0.98, textstr, transform=plt.gca().transAxes, fontsize=10,
+             verticalalignment='top', bbox=props)
+    
+    
+    plt.xlabel('Número de pasos (N)', fontsize=12)
+    plt.ylabel('⟨x²⟩ (Posición cuadrática media)', fontsize=12)
+    plt.title('Relación ⟨x²⟩ vs N en Marcha Aleatoria Unidimensional\n'
+              f'Constante de difusión D = {diffusion_constant:.4f}', fontsize=14)
+    plt.grid(True, alpha=0.3)
+    plt.legend(fontsize=12)
+    plt.tight_layout()
+    plt.show()
