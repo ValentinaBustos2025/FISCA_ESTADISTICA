@@ -4,7 +4,8 @@ from logic import run_simulation, run_multiple_n_simulations, calculate_diffusio
 
 
     
-    
+def ejectuar_plot_histogram(results):
+        plot_histogram(results)
 
 def plot_time_series_sample(results: dict, sample_size: int = 50):
     """
@@ -86,32 +87,22 @@ def plot_mean_squared_vs_n(results_by_n: dict[int, dict], diffusion_constant: fl
     plt.show()
 
 def main():
-    """
-    Función principal para ejecutar la simulación y visualización.
-    """
     print("=== Simulación de Marcha Aleatoria Unidimensional ===")
+    
     print("1. Simulación individual con histograma")
     print("2. Análisis de ⟨x²⟩ vs N para múltiples valores")
     
     option = input("\nSeleccione opción (1 o 2): ")
     
-    if option == "1":
-        # Simulación individual
+    if option == "1": #PUNTO 7
+        # Simulación individual con histograma
+        
         n_steps = int(input("Ingrese el número de pasos por marcha aleatoria (N): "))
         n_simulations = int(input("Ingrese el número de simulaciones a ejecutar: "))
-        print(f"\nEjecutando {n_simulations} simulaciones de {n_steps} pasos cada una...")
-    
         results = run_simulation(n_steps, n_simulations)
-    
-        print(f"\nSimulación completada.")
-        print(f"Posición media ⟨x⟩: {results['mean_position']:.4f}")
-        print(f"Posición cuadrática media ⟨x²⟩: {results['mean_squared_position']:.4f}")
-        print(f"Desviación estándar: {results['std_position']:.4f}")
-        print(f"Desviación teórica (√N): {results['sigma_theoretical']:.4f}")
-        print(f"Valor teórico ⟨x²⟩: {n_steps:.4f}")
-        
+            
         plot_histogram(results)
-        plot_time_series_sample(results)
+  
         
     elif option == "2":
         # Análisis de ⟨x²⟩ vs N
